@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 import mysql.connector
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
@@ -113,4 +114,5 @@ def get_polling_units(ward_id):
     return jsonify(units)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
