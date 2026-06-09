@@ -6,6 +6,11 @@ import os
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
 
+@app.route('/')
+def home():
+    # This automatically forwards anyone who visits the main link to /q1
+    return redirect(url_for('pu_results'))
+
 def get_db_connection():
     return mysql.connector.connect(
         host="mysql-335a5660-chinedueke2007-c30d.e.aivencloud.com",
