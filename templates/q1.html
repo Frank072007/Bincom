@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question 1: Polling Unit Results</title>
+</head>
+<body>
+    <h2>View Polling Unit Results</h2>
+    <form method="POST" action="/q1">
+        <label for="pu_id">Select Polling Unit:</label>
+        <select name="pu_id" id="pu_id" required>
+            <option value="">-- Choose a Polling Unit --</option>
+            {% for pu in polling_units %}
+                <option value="{{ pu.uniqueid }}" {% if selected_pu|string == pu.uniqueid|string %}selected{% endif %}>
+                    {{ pu.polling_unit_name }} ({{ pu.polling_unit_number }})
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">View Results</button>
+    </form>
+
+    {% if results is not none %}
+        <h3>Results:</h3>
+        {% if results %}
+            <table border="1" cellpadding="5">
+                <tr>
+                    <th>Party</th>
+                    <th>Score</th>
+                </tr>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row.party_abbreviation }}</td>
+                    <td>{{ row.party_score }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No results found for this polling unit.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

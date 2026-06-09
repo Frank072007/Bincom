@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question 2: LGA Totals</title>
+</head>
+<body>
+    <h2>Summed Total Results for an LGA</h2>
+    <form method="POST" action="/q2">
+        <label for="lga_id">Select LGA:</label>
+        <select name="lga_id" id="lga_id" required>
+            <option value="">-- Choose an LGA --</option>
+            {% for lga in lgas %}
+                <option value="{{ lga.lga_id }}" {% if selected_lga|string == lga.lga_id|string %}selected{% endif %}>
+                    {{ lga.lga_name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Calculate Totals</button>
+    </form>
+
+    {% if results is not none %}
+        <h3>Total Collated Scores:</h3>
+        {% if results %}
+            <table border="1" cellpadding="5">
+                <tr>
+                    <th>Party</th>
+                    <th>Total Summed Score</th>
+                </tr>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row.party_abbreviation }}</td>
+                    <td>{{ row.total_score }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No polling unit results recorded under this LGA.</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

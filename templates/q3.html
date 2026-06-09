@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Question 3: Enter New Results</title>
+</head>
+<body>
+    <h2>Store Results for a New Polling Unit</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: green; font-weight: bold;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/q3">
+        <h3>1. Location Information</h3>
+        <label>LGA:</label>
+        <select id="lga_select" required>
+            <option value="">-- Select LGA --</option>
+            {% for lga in lgas %}
+                <option value="{{ lga.lga_id }}">{{ lga.lga_name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label>Ward:</label>
+        <select id="ward_select" required disabled>
+            <option value="">-- Select Ward --</option>
+        </select><br><br>
+
+        <label>Polling Unit:</label>
+        <select name="pu_id" id="pu_select" required disabled>
+            <option value="">-- Select Polling Unit --</option>
+        </select><br><br>
+
+        <hr>
+
+        <h3>2. Party Scores</h3>
+        <table>
+            <tr><td><label>PDP:</label></td><td><input type="number" name="PDP" min="0"></td></tr>
+            <tr><td><label>DPP:</label></td><td><input type="number" name="DPP" min="0"></td></tr>
+            <tr><td><label>ACN:</label></td><td><input type="number" name="ACN" min="0"></td></tr>
+            <tr><td><label>PPA:</label></td><td><input type="number" name="PPA" min="0"></td></tr>
+            <tr><td><label>CDC:</label></td><td><input type="number" name="CDC" min="0"></td></tr>
+            <tr><td><label>JP:</label></td><td><input type="number" name="JP" min="0"></td></tr>
+            <tr><td><label>ANPP:</label></td><td><input type="number" name="ANPP" min="0"></td></tr>
+            <tr><td><label>LABO:</label></td><td><input type="number" name="LABO" min="0"></td></tr>
+            <tr><td><label>CPP:</label></td><td><input type="number" name="CPP" min="0"></td></tr>
+        </table><br>
+
+        <label>Entered By:</label>
+        <input type="text" name="entered_by" required><br><br>
+
+        <button type="submit">Save Results</button>
+    </form>
+
+    <script>
+        const lgaSelect = document.getElementById('lga_select');
+        const wardSelect = document.getElementById('ward_select');
+        const puSelect = document.getElementById('pu_select');
+
+        lgaSelect.addEventListener('change', function() {
+            const lgaId = this.value;
+            wardSelect.innerHTML = '<option value="">-- Select Ward --</option>';
+            puSelect.innerHTML = '<option value="">-- Select Polling Unit --</option>';
+            puSelect.disabled = true;
+
+            if (!lgaId) {
+                wardSelect.disabled = true;
+                return;
+            }
+
+            fetch(`/api/wards/${lgaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(ward => {
+                        const opt = document.createElement('option');
+                        opt.value = ward.ward_id;
+                        opt.textContent = ward.ward_name;
+                        wardSelect.appendChild(opt);
+                    });
+                    wardSelect.disabled = false;
+                });
+        });
+
+        wardSelect.addEventListener('change', function() {
+            const wardId = this.value;
+            puSelect.innerHTML = '<option value="">-- Select Polling Unit --</option>';
+
+            if (!wardId) {
+                puSelect.disabled = true;
+                return;
+            }
+
+            fetch(`/api/polling_units/${wardId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(unit => {
+                        const opt = document.createElement('option');
+                        opt.value = unit.uniqueid;
+                        opt.textContent = unit.polling_unit_name;
+                        puSelect.appendChild(opt);
+                    });
+                    puSelect.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>
